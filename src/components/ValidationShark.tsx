@@ -12,6 +12,9 @@ interface ValidationSharkProps {
     valid?: string;
     invalid?: string;
   };
+  // Nuevas props para control automático
+  blockForm?: boolean;
+  showMessages?: boolean;
 }
 
 interface ValidationState {
@@ -27,7 +30,9 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
   onInvalid,
   className,
   style,
-  messages = {}
+  messages = {},
+  blockForm = true,
+  showMessages = true
 }) => {
   const [validationState, setValidationState] = useState<ValidationState>({
     isValid: true,
@@ -37,19 +42,40 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
   const findNearestInput = (): HTMLInputElement | HTMLTextAreaElement | null => {
+    // Si se proporciona inputId, usarlo directamente
     if (inputId) {
       return document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
     }
-    const component = document.querySelector('[data-validation-shark]');
-    if (!component) return null;
-    let element = component.parentElement;
-    while (element) {
-      const input = element.querySelector('input, textarea');
+
+    // Buscar el input más cercano al componente ValidationShark
+    const validationSharkElement = document.querySelector('[data-validation-shark]');
+    if (!validationSharkElement) return null;
+
+    // Buscar en el mismo contenedor (InputField)
+    const container = validationSharkElement.closest('.InputField, [class*="InputField"], div');
+    if (container) {
+      const input = container.querySelector('input, textarea, select');
+      if (input) return input as HTMLInputElement | HTMLTextAreaElement;
+    }
+
+    // Buscar en el elemento padre inmediato
+    let element = validationSharkElement.parentElement;
+    while (element && element !== document.body) {
+      const input = element.querySelector('input, textarea, select');
       if (input) return input as HTMLInputElement | HTMLTextAreaElement;
       element = element.parentElement;
     }
-    const input = component.querySelector('input, textarea');
-    return input as HTMLInputElement | HTMLTextAreaElement;
+
+    // Buscar en el elemento anterior (hermano)
+    let sibling = validationSharkElement.previousElementSibling;
+    while (sibling) {
+      if (sibling.tagName === 'INPUT' || sibling.tagName === 'TEXTAREA' || sibling.tagName === 'SELECT') {
+        return sibling as HTMLInputElement | HTMLTextAreaElement;
+      }
+      sibling = sibling.previousElementSibling;
+    }
+
+    return null;
   };
 
   useEffect(() => {
@@ -83,23 +109,49 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
           setValidationState({
             isValid: true,
             message: messages.valid || '✅ Válido',
-            isVisible: true
+            isVisible: showMessages
           });
           onValid?.();
+          
+          // Desbloquear el formulario si estaba bloqueado
+          if (blockForm) {
+            const form = input.closest('form');
+            if (form) {
+              form.removeAttribute('data-validation-blocked');
+              const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+              if (submitButton) {
+                submitButton.removeAttribute('disabled');
+                submitButton.removeAttribute('title');
+              }
+            }
+          }
         } else {
           setValidationState({
             isValid: false,
-            message: messages.invalid || '❌ No permitido',
-            isVisible: true
+            message: messages.invalid || '❌ Contenido no permitido detectado',
+            isVisible: showMessages
           });
           onInvalid?.();
+          
+          // Bloquear el formulario si está habilitado
+          if (blockForm) {
+            const form = input.closest('form');
+            if (form) {
+              form.setAttribute('data-validation-blocked', 'true');
+              const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+              if (submitButton) {
+                submitButton.setAttribute('disabled', 'true');
+                submitButton.setAttribute('title', 'Formulario bloqueado por contenido no permitido');
+              }
+            }
+          }
         }
       } catch (error) {
         console.error('Error de validación:', error);
         setValidationState({
           isValid: false,
           message: '❌ Error de validación',
-          isVisible: true
+          isVisible: showMessages
         });
       }
     };
@@ -186,8 +238,10 @@ ValidationShark.defaultProps = {
   config: {},
   messages: {
     valid: '✅ Válido',
-    invalid: '❌ No permitido'
-  }
+    invalid: '❌ Contenido no permitido detectado'
+  },
+  blockForm: true,
+  showMessages: true
 };
 
 export default ValidationShark; 
