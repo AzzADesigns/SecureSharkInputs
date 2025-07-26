@@ -4,12 +4,12 @@ export * from './schemas/enterpriseConfig';
 export * from './schemas/useSchema';
 
 // Nuevos componentes simples
-export { ValidationShark, useValidationShark, withValidationShark } from './components/ValidationShark';
-export { SimpleValidationShark, ValidationShark as SimpleShark } from './components/SimpleValidationShark';
+export { default as ValidationShark, useValidationShark, withValidationShark } from './components/ValidationShark';
+export { default as SimpleValidationShark } from './components/SimpleValidationShark';
 export { useSharkValidation } from './hooks/useSharkValidation';
 
-// Exportar el componente más simple como default
-export { ValidationShark as default } from './components/SimpleValidationShark';
+// Exportar ValidationShark como default principal
+export { default } from './components/ValidationShark';
 
 // Backend exports
 export * from './backend/secureSharkBackend';

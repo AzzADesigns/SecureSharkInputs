@@ -20,7 +20,7 @@ interface ValidationState {
   isVisible: boolean;
 }
 
-export const ValidationShark: React.FC<ValidationSharkProps> = ({
+const ValidationShark: React.FC<ValidationSharkProps> = ({
   inputId,
   config = {},
   onValid,
@@ -178,6 +178,16 @@ export const withValidationShark = <P extends object>(
       </div>
     );
   };
+};
+
+// Configurar displayName y defaultProps
+ValidationShark.displayName = 'ValidationShark';
+ValidationShark.defaultProps = {
+  config: {},
+  messages: {
+    valid: '✅ Válido',
+    invalid: '❌ No permitido'
+  }
 };
 
 export default ValidationShark; 

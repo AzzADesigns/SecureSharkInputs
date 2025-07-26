@@ -14,7 +14,7 @@ interface ValidationState {
   isVisible: boolean;
 }
 
-export const SimpleValidationShark: React.FC<SimpleValidationSharkProps> = ({
+const SimpleValidationShark: React.FC<SimpleValidationSharkProps> = ({
   for: inputId,
   maxLength = 1000,
   onValid,
@@ -120,6 +120,12 @@ export const SimpleValidationShark: React.FC<SimpleValidationSharkProps> = ({
       {validationState.message}
     </div>
   );
+};
+
+// Configurar displayName y defaultProps
+SimpleValidationShark.displayName = 'SimpleValidationShark';
+SimpleValidationShark.defaultProps = {
+  maxLength: 1000
 };
 
 // Exportar como ValidationShark para compatibilidad
