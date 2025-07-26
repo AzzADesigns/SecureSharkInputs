@@ -1,0 +1,51 @@
+# Source files
+src/
+*.ts
+*.tsx
+!*.d.ts
+
+# Development files
+node_modules/
+.git/
+.gitignore
+.npmignore
+.eslintrc*
+.prettierrc*
+jest.config.js
+tsconfig.json
+
+# Build artifacts
+*.log
+coverage/
+.nyc_output/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Development scripts
+run-example.js
+publish.sh
+
+# Keep these files for publication
+!README.md
+!QUICK_START.md
+!GETTING_STARTED.md
+!PUBLISH.md
+!SUMMARY.md
+!FINAL_GUIDE.md
+!examples/
+!LICENSE 

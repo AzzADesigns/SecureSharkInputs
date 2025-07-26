@@ -1,0 +1,98 @@
+{
+  "name": "securesharkinputs",
+  "version": "1.1.0",
+  "description": "Advanced enterprise validation library with multi-layer security protection for SecureShark",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./backend": {
+      "import": "./dist/backend/secureSharkBackend.js",
+      "require": "./dist/backend/secureSharkBackend.js",
+      "types": "./dist/backend/secureSharkBackend.d.ts"
+    },
+    "./core": {
+      "import": "./dist/core/lightweightValidator.js",
+      "require": "./dist/core/lightweightValidator.js",
+      "types": "./dist/core/lightweightValidator.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "scripts",
+    "README.md",
+    "COMPLETE_GUIDE.md",
+    "BACKEND_GUIDE.md",
+    "CONNECTION_VERIFICATION.md",
+    "OPTIMIZATION_GUIDE.md",
+    "examples",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:integration": "node scripts/test-integration.js",
+    "test:connection": "node scripts/test-connection.js",
+    "test:all": "npm run test && npm run test:integration",
+    "lint": "eslint src --ext .ts,.tsx",
+    "format": "prettier --write src/**/*.{ts,tsx}",
+    "example": "node run-example.js"
+  },
+  "keywords": [
+    "validation",
+    "enterprise",
+    "security",
+    "xss",
+    "sql-injection",
+    "content-moderation",
+    "form-validation",
+    "typescript",
+    "yup",
+    "security-library",
+    "secureshark",
+    "input-validation"
+  ],
+  "author": "Azariel Moreno <walter.azariel.moreno@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AzzADesigns/SecureSharkInputs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AzzADesigns/SecureSharkInputs/issues"
+  },
+  "homepage": "https://github.com/AzzADesigns/SecureSharkInputs#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "react": "^18.0.0",
+    "typescript": "^5.8.3",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "prettier": "^3.0.0",
+    "rimraf": "^5.0.0",
+    "ts-jest": "^29.0.0"
+  },
+  "peerDependencies": {
+    "yup": "^1.6.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
