@@ -47,31 +47,41 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
       return document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
     }
 
-    // Buscar el input más cercano usando una estrategia más simple
-    // 1. Buscar en el elemento padre inmediato
-    const parent = document.querySelector('[data-validation-shark]')?.parentElement;
-    if (parent) {
-      const input = parent.querySelector('input, textarea, select');
-      if (input) return input as HTMLInputElement | HTMLTextAreaElement;
-    }
+    // Buscar el input más cercano usando una estrategia más robusta
+    // Usar una referencia al elemento actual del componente
+    const currentElement = document.querySelector('[data-validation-shark]');
+    
+    if (currentElement) {
+      // 1. Buscar en el elemento padre inmediato
+      const parent = currentElement.parentElement;
+      if (parent) {
+        const input = parent.querySelector('input, textarea, select');
+        if (input) return input as HTMLInputElement | HTMLTextAreaElement;
+      }
 
-    // 2. Buscar en el contenedor padre (InputField)
-    const container = document.querySelector('[data-validation-shark]')?.closest('.InputField, [class*="InputField"], div');
-    if (container) {
-      const input = container.querySelector('input, textarea, select');
-      if (input) return input as HTMLInputElement | HTMLTextAreaElement;
-    }
+      // 2. Buscar en el contenedor padre (InputField)
+      const container = currentElement.closest('.InputField, [class*="InputField"], div');
+      if (container) {
+        const input = container.querySelector('input, textarea, select');
+        if (input) return input as HTMLInputElement | HTMLTextAreaElement;
+      }
 
-    // 3. Buscar en el elemento anterior (hermano)
-    const validationSharkElement = document.querySelector('[data-validation-shark]');
-    if (validationSharkElement) {
-      let sibling = validationSharkElement.previousElementSibling;
+      // 3. Buscar en el elemento anterior (hermano)
+      let sibling = currentElement.previousElementSibling;
       while (sibling) {
         if (sibling.tagName === 'INPUT' || sibling.tagName === 'TEXTAREA' || sibling.tagName === 'SELECT') {
           return sibling as HTMLInputElement | HTMLTextAreaElement;
         }
         sibling = sibling.previousElementSibling;
       }
+    }
+
+    // 4. Si no se encuentra, buscar en todo el DOM por el input más cercano
+    // Esto es un fallback para casos donde la estructura no es estándar
+    const allInputs = document.querySelectorAll('input, textarea, select');
+    if (allInputs.length > 0) {
+      // Retornar el primer input encontrado como fallback
+      return allInputs[0] as HTMLInputElement | HTMLTextAreaElement;
     }
 
     return null;
@@ -81,8 +91,10 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
     const input = findNearestInput();
     if (!input) {
       console.warn('ValidationShark: No se encontró ningún input para validar');
+      console.log('ValidationShark: Elementos input disponibles:', document.querySelectorAll('input, textarea, select').length);
       return;
     }
+    console.log('ValidationShark: Input encontrado:', input.id || input.name || 'sin id');
     inputRef.current = input;
 
     const validator = createEnterpriseValidator({

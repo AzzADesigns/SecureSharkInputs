@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test User Code - ValidationShark</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/securesharkinputs@1.2.3/dist/index.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #101828;
+            color: white;
+        }
+        .test-section {
+            background: #1a2332;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+        .input-field {
+            margin: 15px 0;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            background-color: #181f2a;
+            color: white;
+        }
+        input::placeholder {
+            color: #a0aec0;
+        }
+        button {
+            background: #3182ce;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2c5aa0;
+        }
+        button:disabled {
+            background: #4a5568;
+            cursor: not-allowed;
+        }
+        .validation-message {
+            font-size: 12px;
+            margin-top: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .validation-success {
+            background-color: #22543d;
+            color: #9ae6b4;
+            border: 1px solid #38a169;
+        }
+        .validation-error {
+            background-color: #742a2a;
+            color: #feb2b2;
+            border: 1px solid #e53e3e;
+        }
+        .error {
+            color: #feb2b2;
+            font-size: 12px;
+        }
+        .log {
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .form-container {
+            background: #101828;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test User Code - ValidationShark</h1>
+    
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { ValidationShark } = window.SecureSharkInputs;
+        
+        // Simulación de react-hook-form
+        function useForm(config) {
+            const [values, setValues] = React.useState(config.defaultValues || {});
+            const [errors, setErrors] = React.useState({});
+            
+            const register = (name) => ({
+                name,
+                onChange: (e) => {
+                    setValues(prev => ({ ...prev, [name]: e.target.value }));
+                },
+                value: values[name] || ''
+            });
+            
+            const handleSubmit = (onSubmit) => (e) => {
+                e.preventDefault();
+                onSubmit(values);
+            };
+            
+            const watch = (field) => values[field];
+            
+            return {
+                register,
+                handleSubmit,
+                watch,
+                formState: { errors }
+            };
+        }
+        
+        function EntryForm({ onClose }) {
+            const {
+                register,
+                handleSubmit,
+                watch,
+                formState: { errors },
+            } = useForm({
+                defaultValues: {
+                    email: '',
+                    age: '',
+                    firstName: '',
+                    lastName: '',
+                    phone: '',
+                    discord: '',
+                    country: '',
+                    otherCountry: '',
+                    role: '',
+                    stack: '',
+                    experience: '',
+                    linkedin: '',
+                    github: '',
+                    behance: '',
+                    website: '',
+                    otherNetwork: '',
+                    expectations: '',
+                },
+            });
+
+            const countryValue = watch('country');
+
+            const onSubmit = (data) => {
+                alert('Formulario enviado correctamente!');
+                onClose();
+            };
+
+            const inputClass = 'border p-2 rounded w-full bg-[#181f2a] text-white placeholder-gray-400';
+
+            return (
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="form-container"
+                >
+                    <h2 className='mb-5 text-3xl font-bold'>¡Bienvenido a la comunidad!</h2>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Correo electrónico *</label>
+                        <input
+                            id="email"
+                            type="email"
+                            {...register('email')}
+                            className={inputClass}
+                            placeholder="Tu correo electrónico"
+                        />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Edad *</label>
+                        <input id="age" type="number" {...register('age')} className={inputClass} placeholder="Ej: 25" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Nombre *</label>
+                        <input id="firstName" type="text" {...register('firstName')} className={inputClass} placeholder="Tu nombre" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Apellido *</label>
+                        <input 
+                            id="lastName"
+                            type="text" 
+                            {...register('lastName')} 
+                            className={inputClass} 
+                            placeholder="Tu apellido"
+                        />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Celular *</label>
+                        <input id="phone" type="text" {...register('phone')} className={inputClass} placeholder="Ej: 11-1234-5678" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Alias o Nick en Discord</label>
+                        <input id="discord" type="text" {...register('discord')} className={inputClass} placeholder="Tu usuario de Discord" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">País de Residencia *</label>
+                        <select id="country" {...register('country')} className={inputClass}>
+                            <option value="">Selecciona un país</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="México">México</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                        <ValidationShark />
+                    </div>
+                    
+                    {countryValue === 'Otra' && (
+                        <div className="input-field">
+                            <label className="block text-sm font-medium text-white mb-1">Si pusiste Otra en País de Residencia, especificá cuál es.</label>
+                            <input id="otherCountry" type="text" {...register('otherCountry')} className={inputClass} placeholder="Tu país" />
+                            <ValidationShark />
+                        </div>
+                    )}
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Rol actual / Rol al que aspiras *</label>
+                        <input id="role" type="text" {...register('role')} className={inputClass} placeholder="Ej: Frontend Developer" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">¿Cuál es tu stack tecnológico? Por favor escribe las tecnologías separadas por comas.</label>
+                        <input id="stack" type="text" {...register('stack')} className={inputClass} placeholder="Ej: React, TypeScript, Tailwind CSS" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Si estás trabajando en la industria, ¿cuántos años de experiencia tenés?</label>
+                        <input id="experience" type="text" {...register('experience')} className={inputClass} placeholder="Ej: 3 años" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Tu LinkedIn es... *</label>
+                        <input id="linkedin" type="text" {...register('linkedin')} className={inputClass} placeholder="Tu perfil de LinkedIn" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Tu GitHub es...</label>
+                        <input id="github" type="text" {...register('github')} className={inputClass} placeholder="Tu perfil de GitHub" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Tu Behance es...</label>
+                        <input id="behance" type="text" {...register('behance')} className={inputClass} placeholder="Tu perfil de Behance" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Tu sitio web es...</label>
+                        <input id="website" type="text" {...register('website')} className={inputClass} placeholder="Tu sitio web personal" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">Tenés otra red? Contanos</label>
+                        <input id="otherNetwork" type="text" {...register('otherNetwork')} className={inputClass} placeholder="Otras redes sociales" />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="input-field">
+                        <label className="block text-sm font-medium text-white mb-1">¿Qué es lo que esperás de la comunidad? ¿Cuáles serían tus ideas para contribuir a la misma?</label>
+                        <textarea id="expectations" {...register('expectations')} className={inputClass} placeholder="Cuéntanos tus expectativas y cómo te gustaría contribuir a la comunidad." />
+                        <ValidationShark />
+                    </div>
+                    
+                    <div className="flex gap-2 mt-4">
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        >
+                            Enviar
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </form>
+            );
+        }
+        
+        function TestApp() {
+            const [showForm, setShowForm] = React.useState(true);
+            
+            return (
+                <div>
+                    {showForm ? (
+                        <EntryForm onClose={() => setShowForm(false)} />
+                    ) : (
+                        <div className="test-section">
+                            <h2>✅ Formulario cerrado</h2>
+                            <button onClick={() => setShowForm(true)}>Abrir formulario nuevamente</button>
+                        </div>
+                    )}
+                    
+                    <div className="test-section">
+                        <h2>📋 Instrucciones de Prueba</h2>
+                        <ol>
+                            <li><strong>Test Normal:</strong> Escribe "Hola mundo" → Debería mostrar ✅ Válido</li>
+                            <li><strong>Test XSS:</strong> Escribe "&lt;script&gt;alert('xss')&lt;/script&gt;" → Debería mostrar ❌ Contenido no permitido</li>
+                            <li><strong>Test SQL:</strong> Escribe "'; DROP TABLE users; --" → Debería bloquear el formulario</li>
+                            <li><strong>Test Data Theft:</strong> Escribe "document.cookie" → Debería detectar amenaza</li>
+                        </ol>
+                    </div>
+                </div>
+            );
+        }
+        
+        ReactDOM.render(<TestApp />, document.getElementById('root'));
+    </script>
+</body>
+</html> 
