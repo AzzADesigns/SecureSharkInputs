@@ -94,6 +94,27 @@ function App() {
 
 **Check `SECURESHARK_SETUP.md` for detailed instructions!**
 
+#### 🔧 **MANUAL TEMPLATE INSTALLATION**
+
+If templates weren't installed automatically, run:
+
+```bash
+# Method 1: Using the manual install script
+node node_modules/securesharkinputs/scripts/manual-install.js
+
+# Method 2: Using npm script (add to your package.json)
+npm run install-shark-templates
+```
+
+Add this to your `package.json` scripts:
+```json
+{
+  "scripts": {
+    "install-shark-templates": "node node_modules/securesharkinputs/scripts/manual-install.js"
+  }
+}
+```
+
 #### 🎯 **MANUAL SETUP - Uso Correcto**
 
 **Paso 1: Instalar**

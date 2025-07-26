@@ -3,23 +3,33 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🛡️ SecureSharkInputs - Installing templates...');
+console.log('🛡️ SecureSharkInputs - Manual Template Installation');
+console.log('==================================================');
 
 // Get the project root (where package.json is located)
-const projectRoot = process.env.INIT_CWD || process.cwd();
+const projectRoot = process.cwd();
 console.log(`📁 Project root: ${projectRoot}`);
 
-// Check if we're in a valid npm install context
-if (!process.env.npm_package_name) {
-  console.log('ℹ️ Not running in npm install context, skipping template installation');
-  console.log('💡 To install templates manually, run: node node_modules/securesharkinputs/scripts/install-templates.js');
-  process.exit(0);
+// Check if we're in a Node.js project
+const packageJsonPath = path.join(projectRoot, 'package.json');
+if (!fs.existsSync(packageJsonPath)) {
+  console.error('❌ No package.json found in current directory');
+  console.log('💡 Make sure you\'re in your project root directory');
+  process.exit(1);
+}
+
+// Check if securesharkinputs is installed
+const nodeModulesPath = path.join(projectRoot, 'node_modules/securesharkinputs');
+if (!fs.existsSync(nodeModulesPath)) {
+  console.error('❌ securesharkinputs package not found');
+  console.log('💡 Please install the package first: npm install securesharkinputs');
+  process.exit(1);
 }
 
 // Define template source and destination paths
 const templates = [
   {
-    source: path.join(__dirname, '../templates/react-form-template.tsx'),
+    source: path.join(nodeModulesPath, 'templates/react-form-template.tsx'),
     destination: path.join(projectRoot, 'src/components/SecureSharkForm.tsx'),
     description: 'React form template with ValidationShark'
   }
@@ -36,7 +46,7 @@ try {
   }
 } catch (error) {
   console.error(`❌ Error creating components directory: ${error.message}`);
-  console.log('💡 You can create the directory manually and run the script again');
+  process.exit(1);
 }
 
 // Copy templates
@@ -49,7 +59,23 @@ templates.forEach(template => {
       // Check if destination already exists
       if (fs.existsSync(template.destination)) {
         console.log(`⚠️ Template already exists: ${template.destination}`);
-        console.log('💡 Skipping to avoid overwriting existing files');
+        const readline = require('readline');
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        });
+        
+        rl.question('Do you want to overwrite it? (y/N): ', (answer) => {
+          rl.close();
+          if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
+            fs.copyFileSync(template.source, template.destination);
+            console.log(`✅ Overwritten: ${template.description}`);
+            console.log(`   Location: ${template.destination}`);
+            installedCount++;
+          } else {
+            console.log('⏭️ Skipped template installation');
+          }
+        });
         return;
       }
       
@@ -116,7 +142,7 @@ Modify the template at \`src/components/SecureSharkForm.tsx\` to match your need
 
 If templates weren't installed automatically, run:
 \`\`\`bash
-node node_modules/securesharkinputs/scripts/install-templates.js
+node node_modules/securesharkinputs/scripts/manual-install.js
 \`\`\`
 `;
 
@@ -131,8 +157,11 @@ try {
 if (installedCount > 0) {
   console.log('\n🎉 SecureSharkInputs templates installed successfully!');
   console.log('📖 Check SECURESHARK_SETUP.md for usage instructions');
+  console.log('\n💡 Next steps:');
+  console.log('   1. Import SecureSharkForm in your app');
+  console.log('   2. Test the security features');
+  console.log('   3. Customize the template as needed');
 } else {
   console.log('\n⚠️ No templates were installed');
-  console.log('💡 You can install them manually by running:');
-  console.log('   node node_modules/securesharkinputs/scripts/install-templates.js');
+  console.log('💡 Check the error messages above for details');
 } 
