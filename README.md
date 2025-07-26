@@ -30,74 +30,219 @@ npm install react react-dom
 
 ### 🎯 **Copy & Paste Examples**
 
-**Node.js (Backend):**
-```bash
-# 1. Install
-npm install securesharkinputs
+**Frontend (React) - Uso Correcto:**
+```jsx
+import ValidationShark from 'securesharkinputs';
 
-# 2. Copy examples/quick-example.js to your project
-# 3. Run
-node quick-example.js
+// ✅ FORMA CORRECTA - Con contenedor
+<div className="input-field">
+  <input id="name" type="text" placeholder="Tu nombre" />
+  <ValidationShark />  {/* ✅ Debe estar DENTRO del contenedor */}
+</div>
+
+// ✅ Con react-hook-form
+<div className="input-field">
+  <input id="email" type="email" {...register('email')} />
+  <ValidationShark />
+</div>
+
+// ✅ Con textarea
+<div className="input-field">
+  <textarea id="description" placeholder="Descripción" />
+  <ValidationShark />
+</div>
 ```
 
-**React (Frontend):**
-```bash
-# 1. Install
-npm install securesharkinputs react react-dom
+**Backend (Node.js):**
+```javascript
+import { validateInput } from 'securesharkinputs/backend';
 
-# 2. Copy examples/react-example.jsx to your project
-# 3. Import and use
-```
-
-**Express (Backend):**
-```bash
-# 1. Install
-npm install securesharkinputs express
-
-# 2. Copy examples/backend-example.js to your project
-# 3. Run
-node backend-example.js
+const result = await validateInput(userInput);
+if (!result.isValid) {
+  console.log('Threats detected:', result.threats);
+}
 ```
 
 ### Frontend Usage (React)
 
-#### 1. Super Simple (1 line of code)
+#### 🎯 **PASO A PASO - Uso Correcto**
 
+**Paso 1: Instalar**
+```bash
+npm install securesharkinputs@1.2.0
+```
+
+**Paso 2: Importar**
 ```tsx
 import ValidationShark from 'securesharkinputs';
+```
 
+**Paso 3: Usar CORRECTAMENTE**
+
+```tsx
+// ✅ FORMA CORRECTA - Con InputField o contenedor
 function MyForm() {
   return (
-    <div>
-      <input type="text" placeholder="Write something..." />
-      <ValidationShark />
-    </div>
+    <form>
+      <div className="input-container">
+        <input id="name" type="text" placeholder="Tu nombre" />
+        <ValidationShark />  {/* ✅ Debe estar DENTRO del contenedor */}
+      </div>
+      
+      <div className="input-container">
+        <textarea id="description" placeholder="Descripción" />
+        <ValidationShark />
+      </div>
+    </form>
   );
 }
 ```
 
-That's it! The component automatically:
-- ✅ Finds the nearest input
-- ✅ Validates in real-time
-- ✅ Shows error/success messages
-- ✅ Protects against XSS, SQL injection, inappropriate content, etc.
-
-#### 2. With Specific ID
+**Paso 4: Con react-hook-form (RECOMENDADO)**
 
 ```tsx
-<input id="my-input" type="text" />
-<ValidationShark for="my-input" />
+import { useForm } from 'react-hook-form';
+import ValidationShark from 'securesharkinputs';
+
+function MyForm() {
+  const { register, handleSubmit } = useForm();
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="input-field">
+        <label>Nombre *</label>
+        <input 
+          id="firstName" 
+          type="text" 
+          {...register('firstName')} 
+          placeholder="Tu nombre" 
+        />
+        <ValidationShark />  {/* ✅ Funciona automáticamente */}
+      </div>
+      
+      <div className="input-field">
+        <label>Email *</label>
+        <input 
+          id="email" 
+          type="email" 
+          {...register('email')} 
+          placeholder="tu@email.com" 
+        />
+        <ValidationShark />
+      </div>
+      
+      <button type="submit">Enviar</button>
+    </form>
+  );
+}
 ```
 
-#### 3. With Configuration
+#### 🚨 **IMPORTANTE - Estructura Requerida:**
 
 ```tsx
-<input type="text" />
+// ✅ CORRECTO - ValidationShark dentro del contenedor del input
+<div className="input-container">
+  <input id="name" type="text" />
+  <ValidationShark />
+</div>
+
+// ❌ INCORRECTO - ValidationShark fuera del contenedor
+<input id="name" type="text" />
+<ValidationShark />  {/* No encontrará el input */}
+```
+
+#### 🧪 **Cómo Probar que Funciona:**
+
+1. **Escribe contenido normal:**
+   ```
+   Hola mundo
+   ```
+   ✅ Debería mostrar "✅ Válido"
+
+2. **Escribe contenido malicioso:**
+   ```
+   <script>alert('xss')</script>
+   ```
+   ❌ Debería mostrar "❌ Contenido no permitido detectado"
+   ❌ El botón "Enviar" debería deshabilitarse
+
+3. **Escribe SQL injection:**
+   ```
+   '; DROP TABLE users; --
+   ```
+   ❌ Debería bloquear el formulario
+
+#### 🔧 **Configuración Avanzada (Opcional):**
+
+```tsx
 <ValidationShark 
-  maxLength={500}
-  onValid={() => console.log('✅ Valid')}
-  onInvalid={() => console.log('❌ Invalid')}
+  inputId="specific-input"  // ID específico del input
+  blockForm={true}          // Bloquear formulario (default: true)
+  showMessages={true}       // Mostrar mensajes (default: true)
+  onValid={() => console.log('✅ Válido')}
+  onInvalid={() => console.log('❌ Inválido')}
 />
+```
+
+#### 🚨 **TROUBLESHOOTING - Si no funciona:**
+
+**Problema 1: No detecta el input**
+```tsx
+// ❌ INCORRECTO
+<input id="name" type="text" />
+<ValidationShark />  {/* No encontrará el input */}
+
+// ✅ CORRECTO
+<div className="input-container">
+  <input id="name" type="text" />
+  <ValidationShark />  {/* Dentro del contenedor */}
+</div>
+```
+
+**Problema 2: No muestra mensajes**
+```tsx
+// ✅ Asegúrate de que el input tenga un ID
+<input id="name" type="text" />
+<ValidationShark />
+```
+
+**Problema 3: No bloquea el formulario**
+```tsx
+// ✅ Asegúrate de que el botón tenga type="submit"
+<button type="submit">Enviar</button>
+```
+
+**Problema 4: Con react-hook-form**
+```tsx
+// ✅ Usa el componente InputField o un contenedor
+<InputField label="Nombre">
+  <input id="name" {...register('name')} />
+  <ValidationShark />
+</InputField>
+```
+
+#### 📋 **Ejemplo Completo Funcionando:**
+
+```tsx
+import ValidationShark from 'securesharkinputs';
+
+const InputField = ({ label, children }) => (
+  <div className="input-field">
+    <label>{label}</label>
+    {children}
+  </div>
+);
+
+function MyForm() {
+  return (
+    <form>
+      <InputField label="Nombre">
+        <input id="name" type="text" />
+        <ValidationShark />  {/* ✅ Funciona */}
+      </InputField>
+    </form>
+  );
+}
 ```
 
 #### 4. Programmatic API
