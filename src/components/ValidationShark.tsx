@@ -47,32 +47,31 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
       return document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
     }
 
-    // Buscar el input más cercano al componente ValidationShark
-    const validationSharkElement = document.querySelector('[data-validation-shark]');
-    if (!validationSharkElement) return null;
+    // Buscar el input más cercano usando una estrategia más simple
+    // 1. Buscar en el elemento padre inmediato
+    const parent = document.querySelector('[data-validation-shark]')?.parentElement;
+    if (parent) {
+      const input = parent.querySelector('input, textarea, select');
+      if (input) return input as HTMLInputElement | HTMLTextAreaElement;
+    }
 
-    // Buscar en el mismo contenedor (InputField)
-    const container = validationSharkElement.closest('.InputField, [class*="InputField"], div');
+    // 2. Buscar en el contenedor padre (InputField)
+    const container = document.querySelector('[data-validation-shark]')?.closest('.InputField, [class*="InputField"], div');
     if (container) {
       const input = container.querySelector('input, textarea, select');
       if (input) return input as HTMLInputElement | HTMLTextAreaElement;
     }
 
-    // Buscar en el elemento padre inmediato
-    let element = validationSharkElement.parentElement;
-    while (element && element !== document.body) {
-      const input = element.querySelector('input, textarea, select');
-      if (input) return input as HTMLInputElement | HTMLTextAreaElement;
-      element = element.parentElement;
-    }
-
-    // Buscar en el elemento anterior (hermano)
-    let sibling = validationSharkElement.previousElementSibling;
-    while (sibling) {
-      if (sibling.tagName === 'INPUT' || sibling.tagName === 'TEXTAREA' || sibling.tagName === 'SELECT') {
-        return sibling as HTMLInputElement | HTMLTextAreaElement;
+    // 3. Buscar en el elemento anterior (hermano)
+    const validationSharkElement = document.querySelector('[data-validation-shark]');
+    if (validationSharkElement) {
+      let sibling = validationSharkElement.previousElementSibling;
+      while (sibling) {
+        if (sibling.tagName === 'INPUT' || sibling.tagName === 'TEXTAREA' || sibling.tagName === 'SELECT') {
+          return sibling as HTMLInputElement | HTMLTextAreaElement;
+        }
+        sibling = sibling.previousElementSibling;
       }
-      sibling = sibling.previousElementSibling;
     }
 
     return null;
