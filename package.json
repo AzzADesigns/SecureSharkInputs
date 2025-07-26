@@ -1,6 +1,6 @@
 {
   "name": "securesharkinputs",
-  "version": "1.2.5",
+  "version": "1.3.0",
   "description": "Advanced enterprise validation library with multi-layer security protection for SecureShark",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -37,6 +37,7 @@
     "dev": "tsc --watch",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run clean && npm run build",
+    "postinstall": "node scripts/install-templates.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:integration": "node scripts/test-integration.js",

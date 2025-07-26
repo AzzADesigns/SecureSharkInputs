@@ -103,6 +103,14 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
       ...config
     });
 
+    // Función para prevenir el envío del formulario
+    const preventSubmit = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.warn('🚨 Formulario bloqueado: Contenido malicioso detectado');
+      return false;
+    };
+
     const validateInput = async (value: string) => {
       if (!value.trim()) {
         setValidationState({
@@ -129,11 +137,8 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
             const form = input.closest('form');
             if (form) {
               form.removeAttribute('data-validation-blocked');
-              const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
-              if (submitButton) {
-                submitButton.removeAttribute('disabled');
-                submitButton.removeAttribute('title');
-              }
+              // Remover event listener de bloqueo
+              form.removeEventListener('submit', preventSubmit);
             }
           }
         } else {
@@ -144,11 +149,16 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
           });
           onInvalid?.();
           
-          // Bloquear el formulario si está habilitado
+          // Bloquear el formulario de forma más segura
           if (blockForm) {
             const form = input.closest('form');
             if (form) {
               form.setAttribute('data-validation-blocked', 'true');
+              
+              // Agregar event listener para bloquear el envío
+              form.addEventListener('submit', preventSubmit);
+              
+              // También deshabilitar botones como respaldo
               const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
               if (submitButton) {
                 submitButton.setAttribute('disabled', 'true');
@@ -188,7 +198,8 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
     };
   }, [inputId, config, onValid, onInvalid, messages]);
 
-  if (!validationState.isVisible) {
+  // Siempre mostrar mensajes cuando hay contenido, incluso si showMessages es false
+  if (!validationState.message && !validationState.isVisible) {
     return null;
   }
 

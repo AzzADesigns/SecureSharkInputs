@@ -21,9 +21,17 @@ SecureSharkInputs protects your application inputs from:
 npm install securesharkinputs
 ```
 
+**✨ Templates will be automatically installed!**
+
+When you install the package, it will automatically:
+- ✅ Create a working React form template
+- ✅ Set up the correct file structure
+- ✅ Include a setup guide
+- ✅ Show you exactly how to use it
+
 ### Peer Dependencies (if using React components)
 ```bash
-npm install react react-dom
+npm install react react-dom react-hook-form
 ```
 
 ## 🚀 Quick Start
@@ -65,7 +73,28 @@ if (!result.isValid) {
 
 ### Frontend Usage (React)
 
-#### 🎯 **PASO A PASO - Uso Correcto**
+#### 🚀 **AUTOMATIC TEMPLATES (RECOMMENDED)**
+
+When you install the package, templates are automatically created:
+
+```bash
+npm install securesharkinputs
+# ✅ Templates installed automatically!
+```
+
+Then simply import and use:
+
+```tsx
+import SecureSharkForm from './components/SecureSharkForm';
+
+function App() {
+  return <SecureSharkForm />;
+}
+```
+
+**Check `SECURESHARK_SETUP.md` for detailed instructions!**
+
+#### 🎯 **MANUAL SETUP - Uso Correcto**
 
 **Paso 1: Instalar**
 ```bash
@@ -98,24 +127,7 @@ function MyForm() {
 }
 ```
 
-#### 🚨 **IMPORTANTE - Compatibilidad con Astro:**
 
-Si estás usando **Astro con componentes React**, necesitas usar `inputId` explícitamente:
-
-```tsx
-// ✅ Para Astro + React
-<div className="input-field">
-  <input id="age" type="number" {...register('age')} />
-  <ValidationShark inputId="age" />  {/* ✅ Especificar inputId */}
-</div>
-
-// ✅ Para Astro + React con callbacks
-<ValidationShark 
-  inputId="age"
-  onValid={() => console.log('✅ Válido')}
-  onInvalid={() => console.log('❌ Inválido')}
-/>
-```
 
 **Paso 4: Con react-hook-form (RECOMENDADO)**
 
