@@ -106,7 +106,7 @@ const setupGuide = `# SecureSharkInputs Setup Guide
 - ✅ Data Theft Protection
 - ✅ Form Blocking
 - ✅ Real-time Validation
-- ✅ React Hook Form Integration
+- ✅ React Hook Form Integration (included in library)
 
 ## 🎯 Customization
 

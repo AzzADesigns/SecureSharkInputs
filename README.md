@@ -31,7 +31,7 @@ When you install the package, it will automatically:
 
 ### Peer Dependencies (if using React components)
 ```bash
-npm install react react-dom react-hook-form
+npm install react react-dom
 ```
 
 ## 🚀 Quick Start
@@ -188,6 +188,8 @@ function MyForm() {
   );
 }
 ```
+
+**💡 Nota:** `react-hook-form` ya viene incluido en la librería, ¡no necesitas instalarlo por separado!
 
 #### 🚨 **IMPORTANTE - Estructura Requerida:**
 
