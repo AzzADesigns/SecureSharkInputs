@@ -69,7 +69,7 @@ if (!result.isValid) {
 
 **Paso 1: Instalar**
 ```bash
-npm install securesharkinputs@1.2.0
+npm install securesharkinputs@1.2.4
 ```
 
 **Paso 2: Importar**
@@ -96,6 +96,25 @@ function MyForm() {
     </form>
   );
 }
+```
+
+#### 🚨 **IMPORTANTE - Compatibilidad con Astro:**
+
+Si estás usando **Astro con componentes React**, necesitas usar `inputId` explícitamente:
+
+```tsx
+// ✅ Para Astro + React
+<div className="input-field">
+  <input id="age" type="number" {...register('age')} />
+  <ValidationShark inputId="age" />  {/* ✅ Especificar inputId */}
+</div>
+
+// ✅ Para Astro + React con callbacks
+<ValidationShark 
+  inputId="age"
+  onValid={() => console.log('✅ Válido')}
+  onInvalid={() => console.log('❌ Inválido')}
+/>
 ```
 
 **Paso 4: Con react-hook-form (RECOMENDADO)**
