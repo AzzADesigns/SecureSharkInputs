@@ -367,5 +367,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ for secure enterprise applications** #   S e c u r e S h a r k I n p u t s  
+**Made with ❤️ for secure enterprise applications** 
+ 
  
