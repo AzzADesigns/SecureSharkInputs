@@ -123,6 +123,24 @@ npm install securesharkinputs
 | `onValid` | function | ❌ | Callback when input is valid |
 | `onInvalid` | function | ❌ | Callback when threat detected |
 
+### 🎯 **Required Field Validation Example**
+
+```jsx
+// ✅ Simple required field
+<ValidationShark 
+  name="name"
+  type="text"
+  label="Name"
+  required={true}  // ← This adds automatic validation
+/>
+
+// ✅ The component automatically:
+// - Shows asterisk (*) in label
+// - Prevents form submission if empty
+// - Shows error message
+// - Integrates with react-hook-form validation
+```
+
 ## 🛡️ **Security Features**
 
 ### **Automatic Protection**
@@ -142,22 +160,76 @@ npm install securesharkinputs
 
 - 📖 [Complete Guide](COMPLETE_GUIDE.md) - Detailed usage examples
 - 🔗 [Connection Verification](CONNECTION_VERIFICATION.md) - Test your implementation
-- ⚡ [Optimization Guide](OPTIMIZATION_GUIDE.md) - Performance tips
+
 
 ## 🧪 **Testing**
 
-Test your implementation:
+### **Quick Tests (No Setup Required)**
+
+Test your implementation immediately:
 
 ```bash
 # Test basic functionality
-npm run test:client
+node node_modules/securesharkinputs/scripts/test-client.js
 
 # Test integration
-npm run test:integration
+node node_modules/securesharkinputs/scripts/test-integration.js
 
 # Test connection in your project
-npm run test:connection
+node node_modules/securesharkinputs/scripts/test-connection.js
 ```
+
+### **Add to Your package.json (Recommended)**
+
+Add these scripts to your `package.json` for easy access:
+
+```json
+{
+  "scripts": {
+    "test:shark": "node node_modules/securesharkinputs/scripts/test-client.js",
+    "test:shark-integration": "node node_modules/securesharkinputs/scripts/test-integration.js",
+    "test:shark-connection": "node node_modules/securesharkinputs/scripts/test-connection.js"
+  }
+}
+```
+
+Then run:
+```bash
+npm run test:shark
+npm run test:shark-integration
+npm run test:shark-connection
+```
+
+### **What Each Test Does**
+
+| Test | Purpose | What It Checks |
+|------|---------|----------------|
+| **test-client** | Basic functionality | ✅ Library installation<br>✅ Component availability<br>✅ Basic validation |
+| **test-integration** | Complete integration | ✅ All features working<br>✅ Template installation<br>✅ Security validation |
+| **test-connection** | Real protection | ✅ Input protection in your code<br>✅ Threat detection<br>✅ Form blocking |
+
+### **Example Test Output**
+
+```bash
+# Running test-client.js
+✅ Library installed correctly
+✅ ValidationShark component available
+✅ Security validation working
+✅ Template files present
+
+# Running test-connection.js
+🔍 Analyzing your project...
+✅ Found 3 protected inputs
+✅ Security validation active
+📊 Protection coverage: 100%
+```
+
+### **Troubleshooting**
+
+If tests fail:
+1. **Check installation**: `npm list securesharkinputs`
+2. **Verify template**: Look for `src/components/SecureSharkForm.tsx`
+3. **Check console**: Open browser console (F12) for validation logs
 
 ## 🎯 **Why Choose SecureSharkInputs?**
 
@@ -178,16 +250,38 @@ npm run test:connection
 - Built-in testing tools
 
 ### **Production Ready**
-- Lightweight (67.8 kB)
-- Zero dependencies (except react-hook-form)
+- Lightweight (131.11 KB library code)
+- Includes all dependencies (react-hook-form, react, typescript, yup)
 - Battle-tested security algorithms
 
 ## 📦 **Package Info**
 
-- **Size**: 67.8 kB (unpacked: 297.1 kB)
-- **Dependencies**: react-hook-form (included)
+- **Library Size**: 131.11 KB (compiled code only)
+- **Package Size**: 61.5 KB (compressed for npm)
+- **Unpacked Size**: 269.3 KB (includes dependencies)
+- **Dependencies**: react-hook-form, react, typescript, yup (included)
 - **TypeScript**: Full support
 - **React**: 18+ compatible
+- **Files**: 42 total files
+- **Testing Tools**: 3 built-in test scripts
+
+### **Size Breakdown:**
+- **useSchema.js**: 40.02 KB (validation engine)
+- **secureSharkBackend.js**: 11.02 KB (backend protection)
+- **enterpriseValidator.js**: 9.41 KB (enterprise services)
+- **ValidationShark.js**: 6.96 KB (React component)
+- **index.js**: 2.01 KB (entry point)
+
+## 📚 **Documentation**
+
+### **Complete Guides**
+- **[Complete Guide](COMPLETE_GUIDE.md)** - Step-by-step tutorial for everything
+- **[Connection Verification](CONNECTION_VERIFICATION.md)** - Verify your inputs are protected
+
+### **Quick References**
+- **Installation**: `npm install securesharkinputs`
+- **Basic Usage**: `<ValidationShark name="email" type="email" label="Email" />`
+- **Testing**: `node node_modules/securesharkinputs/scripts/test-client.js`
 
 ## 🤝 **Contributing**
 

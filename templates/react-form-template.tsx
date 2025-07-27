@@ -67,7 +67,7 @@ const SecureSharkForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg text-black shadow-lg">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">
         🛡️ SecureSharkInputs Demo
       </h2>
@@ -79,12 +79,13 @@ const SecureSharkForm: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Name Field */}
+        {/* Name Field - Required */}
+        {/* 💡 required={true} adds automatic validation and asterisk (*) */}
         <ValidationShark 
           name="name"
           type="text"
           label="Name"
-          placeholder="Enter your name"
+          placeholder="Enter your name (required)"
           required={true}
           onValid={() => handleValidInput('name')}
           onInvalid={() => handleInvalidInput('name')}
@@ -131,8 +132,6 @@ const SecureSharkForm: React.FC = () => {
           Submit Form
         </button>
       </form>
-
-
     </div>
   );
 };
