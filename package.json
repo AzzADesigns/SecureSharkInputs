@@ -1,6 +1,6 @@
 {
   "name": "securesharkinputs",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Advanced enterprise validation library with multi-layer security protection for SecureShark",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,16 +9,6 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./backend": {
-      "import": "./dist/backend/secureSharkBackend.js",
-      "require": "./dist/backend/secureSharkBackend.js",
-      "types": "./dist/backend/secureSharkBackend.d.ts"
-    },
-    "./core": {
-      "import": "./dist/core/lightweightValidator.js",
-      "require": "./dist/core/lightweightValidator.js",
-      "types": "./dist/core/lightweightValidator.d.ts"
     }
   },
   "files": [
@@ -27,9 +17,7 @@
     "templates",
     "README.md",
     "COMPLETE_GUIDE.md",
-    "BACKEND_GUIDE.md",
     "CONNECTION_VERIFICATION.md",
-    "OPTIMIZATION_GUIDE.md",
     "examples",
     "LICENSE"
   ],
