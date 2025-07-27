@@ -1,18 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createEnterpriseValidator } from '../services/enterpriseValidator';
 
+// Importación opcional de react-hook-form
+let useFormContext: any = null;
+try {
+  const reactHookForm = require('react-hook-form');
+  useFormContext = reactHookForm.useFormContext;
+} catch (error) {
+  // react-hook-form no está disponible
+  console.warn('react-hook-form no está disponible, usando modo standalone');
+}
+
 interface ValidationSharkProps {
-  inputId?: string;
-  config?: any;
-  onValid?: () => void;
-  onInvalid?: () => void;
+  name: string; // Campo requerido para react-hook-form
+  type?: string; // Tipo de input (text, email, password, etc.)
+  placeholder?: string;
+  label?: string;
+  required?: boolean;
   className?: string;
   style?: React.CSSProperties;
-  messages?: {
-    valid?: string;
-    invalid?: string;
-  };
-  // Nuevas props para control automático
+  // Props de validación
+  onValid?: () => void;
+  onInvalid?: () => void;
   blockForm?: boolean;
   showMessages?: boolean;
 }
@@ -24,13 +33,15 @@ interface ValidationState {
 }
 
 const ValidationShark: React.FC<ValidationSharkProps> = ({
-  inputId,
-  config = {},
+  name,
+  type = 'text',
+  placeholder,
+  label,
+  required = false,
+  className = '',
+  style,
   onValid,
   onInvalid,
-  className,
-  style,
-  messages = {},
   blockForm = true,
   showMessages = true
 }) => {
@@ -39,76 +50,45 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
     message: '',
     isVisible: false
   });
+  
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
+  const formContext = useFormContext();
+  
+  // Obtener register y errors del contexto del formulario
+  const register = formContext?.register;
+  const errors = formContext?.formState?.errors;
+  const watch = formContext?.watch;
 
-  const findNearestInput = (): HTMLInputElement | HTMLTextAreaElement | null => {
-    // Si se proporciona inputId, usarlo directamente
-    if (inputId) {
-      return document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
-    }
+  const inputId = name; // Usar el name como id
 
-    // Buscar el input más cercano usando una estrategia más robusta
-    // Usar una referencia al elemento actual del componente
-    const currentElement = document.querySelector('[data-validation-shark]');
-    
-    if (currentElement) {
-      // 1. Buscar en el elemento padre inmediato
-      const parent = currentElement.parentElement;
-      if (parent) {
-        const input = parent.querySelector('input, textarea, select');
-        if (input) return input as HTMLInputElement | HTMLTextAreaElement;
-      }
-
-      // 2. Buscar en el contenedor padre (InputField)
-      const container = currentElement.closest('.InputField, [class*="InputField"], div');
-      if (container) {
-        const input = container.querySelector('input, textarea, select');
-        if (input) return input as HTMLInputElement | HTMLTextAreaElement;
-      }
-
-      // 3. Buscar en el elemento anterior (hermano)
-      let sibling = currentElement.previousElementSibling;
-      while (sibling) {
-        if (sibling.tagName === 'INPUT' || sibling.tagName === 'TEXTAREA' || sibling.tagName === 'SELECT') {
-          return sibling as HTMLInputElement | HTMLTextAreaElement;
-        }
-        sibling = sibling.previousElementSibling;
-      }
-    }
-
-    // 4. Si no se encuentra, buscar en todo el DOM por el input más cercano
-    // Esto es un fallback para casos donde la estructura no es estándar
-    const allInputs = document.querySelectorAll('input, textarea, select');
-    if (allInputs.length > 0) {
-      // Retornar el primer input encontrado como fallback
-      return allInputs[0] as HTMLInputElement | HTMLTextAreaElement;
-    }
-
-    return null;
+  const findInput = (): HTMLInputElement | HTMLTextAreaElement | null => {
+    return document.getElementById(inputId) as HTMLInputElement | HTMLTextAreaElement;
   };
 
   useEffect(() => {
-    const input = findNearestInput();
+    const input = findInput();
     if (!input) {
-      console.warn('ValidationShark: No se encontró ningún input para validar');
-      console.log('ValidationShark: Elementos input disponibles:', document.querySelectorAll('input, textarea, select').length);
+      console.warn('ValidationShark: No se encontró el input para validar');
       return;
     }
-    console.log('ValidationShark: Input encontrado:', input.id || input.name || 'sin id');
+    
     inputRef.current = input;
+    console.log('ValidationShark: Input encontrado:', input.id);
 
     const validator = createEnterpriseValidator({
-      maxInputLength: 1000,
-      enableLogging: false,
-      ...config
+      enableExternalValidation: false,
+      enableLogging: true,
+      maxInputLength: 1000
     });
 
-    // Función para prevenir el envío del formulario
     const preventSubmit = (e: Event) => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.warn('🚨 Formulario bloqueado: Contenido malicioso detectado');
-      return false;
+      if (!validationState.isValid) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🚨 Form submission blocked due to validation failure');
+        return false;
+      }
+      return true;
     };
 
     const validateInput = async (value: string) => {
@@ -118,6 +98,7 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
           message: '',
           isVisible: false
         });
+        onValid?.();
         return;
       }
 
@@ -127,53 +108,26 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
         if (result.isValid) {
           setValidationState({
             isValid: true,
-            message: messages.valid || '✅ Válido',
-            isVisible: showMessages
+            message: '',
+            isVisible: false
           });
           onValid?.();
-          
-          // Desbloquear el formulario si estaba bloqueado
-          if (blockForm) {
-            const form = input.closest('form');
-            if (form) {
-              form.removeAttribute('data-validation-blocked');
-              // Remover event listener de bloqueo
-              form.removeEventListener('submit', preventSubmit);
-            }
-          }
         } else {
           setValidationState({
             isValid: false,
-            message: messages.invalid || '❌ Contenido no permitido detectado',
-            isVisible: showMessages
+            message: `⚠️ Contenido no permitido detectado`,
+            isVisible: true
           });
           onInvalid?.();
-          
-          // Bloquear el formulario de forma más segura
-          if (blockForm) {
-            const form = input.closest('form');
-            if (form) {
-              form.setAttribute('data-validation-blocked', 'true');
-              
-              // Agregar event listener para bloquear el envío
-              form.addEventListener('submit', preventSubmit);
-              
-              // También deshabilitar botones como respaldo
-              const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
-              if (submitButton) {
-                submitButton.setAttribute('disabled', 'true');
-                submitButton.setAttribute('title', 'Formulario bloqueado por contenido no permitido');
-              }
-            }
-          }
         }
       } catch (error) {
-        console.error('Error de validación:', error);
+        console.error('Error en validación:', error);
         setValidationState({
           isValid: false,
-          message: '❌ Error de validación',
-          isVisible: showMessages
+          message: '❌ Error en validación',
+          isVisible: true
         });
+        onInvalid?.();
       }
     };
 
@@ -189,54 +143,89 @@ const ValidationShark: React.FC<ValidationSharkProps> = ({
       }
     };
 
+    // Agregar event listeners
     input.addEventListener('input', handleInput);
     input.addEventListener('blur', handleBlur);
+
+    // Bloquear formulario si está configurado
+    if (blockForm) {
+      const form = input.closest('form');
+      if (form) {
+        form.addEventListener('submit', preventSubmit);
+        
+        // Marcar el formulario como bloqueado si hay validación fallida
+        if (!validationState.isValid) {
+          form.setAttribute('data-validation-blocked', 'true');
+        } else {
+          form.removeAttribute('data-validation-blocked');
+        }
+      }
+    }
 
     return () => {
       input.removeEventListener('input', handleInput);
       input.removeEventListener('blur', handleBlur);
+      
+      if (blockForm) {
+        const form = input.closest('form');
+        if (form) {
+          form.removeEventListener('submit', preventSubmit);
+        }
+      }
     };
-  }, [inputId, config, onValid, onInvalid, messages]);
+  }, [inputId, validationState.isValid, blockForm, onValid, onInvalid]);
 
-  // Siempre mostrar mensajes cuando hay contenido, incluso si showMessages es false
-  if (!validationState.message && !validationState.isVisible) {
-    return null;
-  }
+  // Estilos base
+  const inputClass = `w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`;
+  const labelClass = 'block text-sm font-medium text-gray-700 mb-1';
+  const errorClass = 'text-red-500 text-sm mt-1';
 
   return (
-    <div
-      data-validation-shark
-      className={className}
-      style={{
-        fontSize: '12px',
-        marginTop: '4px',
-        padding: '4px 8px',
-        borderRadius: '4px',
-        backgroundColor: validationState.isValid ? '#d4edda' : '#f8d7da',
-        color: validationState.isValid ? '#155724' : '#721c24',
-        border: `1px solid ${validationState.isValid ? '#c3e6cb' : '#f5c6cb'}`,
-        display: 'inline-block',
-        ...style
-      }}
-    >
-      {validationState.message}
+    <div className="mb-4">
+      {label && (
+        <label htmlFor={inputId} className={labelClass}>
+          {label} {required && '*'}
+        </label>
+      )}
+      
+      <input
+        id={inputId}
+        type={type}
+        placeholder={placeholder}
+        {...(register ? register(name, { 
+          required: required ? `${label || name} es requerido` : false 
+        }) : {})}
+        className={inputClass}
+        style={style}
+      />
+      
+      {/* Mensaje de error de react-hook-form */}
+      {errors && errors[name] && (
+        <span className={errorClass}>{errors[name]?.message as string}</span>
+      )}
+      
+      {/* Mensaje de validación de seguridad */}
+      {showMessages && validationState.isVisible && !validationState.isValid && (
+        <span className={errorClass}>{validationState.message}</span>
+      )}
     </div>
   );
 };
 
-// Hook para validación programática
+// HOC para componentes con validación
 export const useValidationShark = (config?: any) => {
-  const validator = createEnterpriseValidator({
-    maxInputLength: 1000,
-    enableLogging: false,
-    ...config
-  });
+  const [isValid, setIsValid] = useState(true);
+  const [message, setMessage] = useState('');
 
   const validate = async (input: string) => {
-    return await validator.validate(input);
+    const validator = createEnterpriseValidator(config);
+    const result = await validator.validate(input);
+    setIsValid(result.isValid);
+    setMessage(result.isValid ? '' : 'Contenido no permitido');
+    return result;
   };
 
-  return { validate };
+  return { isValid, message, validate };
 };
 
 // HOC para envolver componentes
@@ -245,25 +234,9 @@ export const withValidationShark = <P extends object>(
   config?: any
 ) => {
   return (props: P) => {
-    return (
-      <div>
-        <Component {...props} />
-        <ValidationShark config={config} />
-      </div>
-    );
+    const validationProps = useValidationShark(config);
+    return <Component {...props} {...validationProps} />;
   };
-};
-
-// Configurar displayName y defaultProps
-ValidationShark.displayName = 'ValidationShark';
-ValidationShark.defaultProps = {
-  config: {},
-  messages: {
-    valid: '✅ Válido',
-    invalid: '❌ Contenido no permitido detectado'
-  },
-  blockForm: true,
-  showMessages: true
 };
 
 export default ValidationShark; 

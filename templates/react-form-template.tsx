@@ -22,7 +22,7 @@ interface FormData {
   name: string;
   email: string;
   message: string;
-  age: number;
+  age?: number;
 }
 
 const SecureSharkForm: React.FC = () => {
@@ -100,105 +100,48 @@ const SecureSharkForm: React.FC = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Name Field */}
-        <div>
-          <label htmlFor="name" className={labelClass}>
-            Name *
-          </label>
-          <input
-            id="name"
-            type="text"
-            {...register('name', { required: 'Name is required' })}
-            className={inputClass}
-            placeholder="Enter your name"
-          />
-          {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark 
-            inputId="name" 
-            onValid={() => handleValidInput('name')}
-            onInvalid={() => handleInvalidInput('name')}
-          />
-          {errors.name && (
-            <span className="text-red-500 text-sm">{errors.name.message}</span>
-          )}
-        </div>
+        <ValidationShark 
+          name="name"
+          type="text"
+          label="Name"
+          placeholder="Enter your name"
+          required={true}
+          onValid={() => handleValidInput('name')}
+          onInvalid={() => handleInvalidInput('name')}
+        />
 
         {/* Email Field */}
-        <div>
-          <label htmlFor="email" className={labelClass}>
-            Email *
-          </label>
-          <input
-            id="email"
-            type="email"
-            {...register('email', { 
-              required: 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Invalid email address'
-              }
-            })}
-            className={inputClass}
-            placeholder="Enter your email"
-          />
-          {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark 
-            inputId="email" 
-            onValid={() => handleValidInput('email')}
-            onInvalid={() => handleInvalidInput('email')}
-          />
-          {errors.email && (
-            <span className="text-red-500 text-sm">{errors.email.message}</span>
-          )}
-        </div>
+        <ValidationShark 
+          name="email"
+          type="email"
+          label="Email"
+          placeholder="Enter your email"
+          required={true}
+          onValid={() => handleValidInput('email')}
+          onInvalid={() => handleInvalidInput('email')}
+        />
 
         {/* Age Field */}
-        <div>
-          <label htmlFor="age" className={labelClass}>
-            Age
-          </label>
-          <input
-            id="age"
-            type="number"
-            {...register('age', { 
-              min: { value: 0, message: 'Age must be positive' },
-              max: { value: 120, message: 'Age must be realistic' }
-            })}
-            className={inputClass}
-            placeholder="Enter your age"
-          />
-          {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark 
-            inputId="age" 
-            onValid={() => handleValidInput('age')}
-            onInvalid={() => handleInvalidInput('age')}
-          />
-          {errors.age && (
-            <span className="text-red-500 text-sm">{errors.age.message}</span>
-          )}
-        </div>
+        <ValidationShark 
+          name="age"
+          type="number"
+          label="Age"
+          placeholder="Enter your age"
+          required={false}
+          onValid={() => handleValidInput('age')}
+          onInvalid={() => handleInvalidInput('age')}
+        />
 
         {/* Message Field */}
-        <div>
-          <label htmlFor="message" className={labelClass}>
-            Message *
-          </label>
-          <textarea
-            id="message"
-            {...register('message', { required: 'Message is required' })}
-            className={`${inputClass} resize-none`}
-            rows={4}
-            placeholder="Enter your message"
-          />
-          {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark 
-            inputId="message" 
-            onValid={() => handleValidInput('message')}
-            onInvalid={() => handleInvalidInput('message')}
-          />
-          {errors.message && (
-            <span className="text-red-500 text-sm">{errors.message.message}</span>
-          )}
-        </div>
+        <ValidationShark 
+          name="message"
+          type="text"
+          label="Message"
+          placeholder="Enter your message"
+          required={true}
+          onValid={() => handleValidInput('message')}
+          onInvalid={() => handleInvalidInput('message')}
+        />
 
         {/* Submit Button */}
         <button
