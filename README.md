@@ -293,4 +293,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Made with ❤️ by [Azariel Moreno](https://github.com/AzzADesigns)**
+**Made with ❤️ by [Azariel Moreno](https://azzadesignsweb.vercel.app/)**

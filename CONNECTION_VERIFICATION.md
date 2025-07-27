@@ -297,6 +297,7 @@ Si tienes problemas:
 2. **Revisa la consola del navegador** para errores
 3. **Verifica la instalación**: `npm list securesharkinputs`
 4. **Consulta la documentación**: [README.md](README.md)
+5. **Contacto**: [https://azzadesignsweb.vercel.app/](https://azzadesignsweb.vercel.app/)
 
 ---
 
