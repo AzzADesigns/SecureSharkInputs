@@ -1,6 +1,6 @@
 {
   "name": "securesharkinputs",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Advanced enterprise validation library with multi-layer security protection for SecureShark",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
