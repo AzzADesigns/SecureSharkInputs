@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import ValidationShark from 'securesharkinputs';
 
@@ -27,10 +27,17 @@ interface FormData {
 
 const SecureSharkForm: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    message: '',
+    age: undefined
+  });
   
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
     reset
   } = useForm<FormData>({
@@ -44,6 +51,7 @@ const SecureSharkForm: React.FC = () => {
   });
 
   const onSubmit = (data: FormData) => {
+    console.log('🚀 Attempting to submit form...');
     console.log('✅ Form submitted successfully:', data);
     setIsSubmitted(true);
     reset();
@@ -52,6 +60,26 @@ const SecureSharkForm: React.FC = () => {
     setTimeout(() => {
       setIsSubmitted(false);
     }, 3000);
+  };
+
+  // 🔄 Sync formData with form values
+  useEffect(() => {
+    const subscription = watch((value) => {
+      setFormData(value as FormData);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  // 🛡️ Callback functions to track validation events
+  const handleValidInput = (inputId: string) => {
+    const value = formData[inputId as keyof FormData] as string;
+    console.log(`✅ Input "${inputId}" is valid: "${value}"`);
+  };
+
+  const handleInvalidInput = (inputId: string) => {
+    const value = formData[inputId as keyof FormData] as string;
+    console.log(`❌ Input "${inputId}" contains malicious content: "${value}"`);
+    console.log('🚨 Form submission will be blocked!');
   };
 
   // 🎨 Styling classes (you can customize these)
@@ -84,7 +112,11 @@ const SecureSharkForm: React.FC = () => {
             placeholder="Enter your name"
           />
           {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark inputId="name" />
+          <ValidationShark 
+            inputId="name" 
+            onValid={() => handleValidInput('name')}
+            onInvalid={() => handleInvalidInput('name')}
+          />
           {errors.name && (
             <span className="text-red-500 text-sm">{errors.name.message}</span>
           )}
@@ -109,7 +141,11 @@ const SecureSharkForm: React.FC = () => {
             placeholder="Enter your email"
           />
           {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark inputId="email" />
+          <ValidationShark 
+            inputId="email" 
+            onValid={() => handleValidInput('email')}
+            onInvalid={() => handleInvalidInput('email')}
+          />
           {errors.email && (
             <span className="text-red-500 text-sm">{errors.email.message}</span>
           )}
@@ -131,7 +167,11 @@ const SecureSharkForm: React.FC = () => {
             placeholder="Enter your age"
           />
           {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark inputId="age" />
+          <ValidationShark 
+            inputId="age" 
+            onValid={() => handleValidInput('age')}
+            onInvalid={() => handleInvalidInput('age')}
+          />
           {errors.age && (
             <span className="text-red-500 text-sm">{errors.age.message}</span>
           )}
@@ -150,7 +190,11 @@ const SecureSharkForm: React.FC = () => {
             placeholder="Enter your message"
           />
           {/* 🛡️ ValidationShark automatically protects this input */}
-          <ValidationShark inputId="message" />
+          <ValidationShark 
+            inputId="message" 
+            onValid={() => handleValidInput('message')}
+            onInvalid={() => handleInvalidInput('message')}
+          />
           {errors.message && (
             <span className="text-red-500 text-sm">{errors.message.message}</span>
           )}
@@ -177,6 +221,15 @@ const SecureSharkForm: React.FC = () => {
         <p className="text-xs text-gray-600 mt-2">
           💡 The form should block submission and show warnings for malicious content
         </p>
+        <p className="text-xs text-blue-600 mt-2">
+          🔍 <strong>Open browser console (F12) to see validation logs:</strong>
+        </p>
+        <ul className="text-xs text-blue-600 space-y-1">
+          <li>• ✅ "Input is valid" - Content is safe</li>
+          <li>• ❌ "Input contains malicious content" - Content blocked</li>
+          <li>• 🚨 "Form submission will be blocked!" - Form prevented from submitting</li>
+          <li>• 🚀 "Attempting to submit form..." - Form submission attempt (only if valid)</li>
+        </ul>
       </div>
 
       {/* 📚 Documentation Links */}
