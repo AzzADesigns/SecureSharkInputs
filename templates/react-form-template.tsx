@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import ValidationShark from 'securesharkinputs';
 
 interface FormData {
@@ -23,7 +23,8 @@ const SecureSharkForm: React.FC = () => {
   const {
     handleSubmit,
     watch,
-    reset
+    reset,
+    control
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -81,47 +82,72 @@ const SecureSharkForm: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Name Field - Required */}
         {/* 💡 required={true} adds automatic validation and asterisk (*) */}
-        <ValidationShark 
+        <Controller
           name="name"
-          type="text"
-          label="Name"
-          placeholder="Enter your name (required)"
-          required={true}
-          onValid={() => handleValidInput('name')}
-          onInvalid={() => handleInvalidInput('name')}
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <ValidationShark 
+              {...field}
+              type="text"
+              label="Name"
+              placeholder="Enter your name (required)"
+              required={true}
+              onValid={() => handleValidInput('name')}
+              onInvalid={() => handleInvalidInput('name')}
+            />
+          )}
         />
 
         {/* Email Field */}
-        <ValidationShark 
+        <Controller
           name="email"
-          type="email"
-          label="Email"
-          placeholder="Enter your email"
-          required={true}
-          onValid={() => handleValidInput('email')}
-          onInvalid={() => handleInvalidInput('email')}
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <ValidationShark 
+              {...field}
+              type="email"
+              label="Email"
+              placeholder="Enter your email"
+              required={true}
+              onValid={() => handleValidInput('email')}
+              onInvalid={() => handleInvalidInput('email')}
+            />
+          )}
         />
 
         {/* Age Field */}
-        <ValidationShark 
-          name="age"
-          type="number"
-          label="Age"
-          placeholder="Enter your age"
-          required={false}
-          onValid={() => handleValidInput('age')}
-          onInvalid={() => handleInvalidInput('age')}
+        <Controller
+          name='age'
+          control={control}
+          rules={{ required: false }}
+          render={({ field }) => (
+            <ValidationShark 
+              {...field}
+              type="number"
+              label="Age"
+              placeholder="Enter your age"
+            />
+          )}
         />
 
         {/* Message Field */}
-        <ValidationShark 
+        <Controller
           name="message"
-          type="text"
-          label="Message"
-          placeholder="Enter your message"
-          required={true}
-          onValid={() => handleValidInput('message')}
-          onInvalid={() => handleInvalidInput('message')}
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <ValidationShark 
+              {...field}
+              type="text"
+              label="Message"
+              placeholder="Enter your message"
+              required={true}
+              onValid={() => handleValidInput('message')}
+              onInvalid={() => handleInvalidInput('message')}
+            />
+          )}
         />
 
         {/* Submit Button */}
